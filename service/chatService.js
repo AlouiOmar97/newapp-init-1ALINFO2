@@ -1,4 +1,5 @@
 const Chat = require('../model/chatModel')
+const socketIo = require('socket.io')
 async function create(req, res, next){
    await new Chat({
         content: req.body.content,
@@ -66,4 +67,17 @@ const deleteC =async (req, res, next)=>{
       })
 }
 
-module.exports = { create, read, readOne, update, deleteC }
+const showChat= (req, res, next)=>{
+    res.render('chat.html.twig')
+}
+
+function socketIO(server) {
+ 
+    const io = socketIo(server);
+       io.on("connection",(socket)=>{
+           console.log("user connected with socket id"+socket.id); 
+         })
+    return io;
+   }
+
+module.exports = { create, read, readOne, update, deleteC, showChat, socketIO }

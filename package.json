@@ -12,6 +12,8 @@
   "dependencies": {
     "express": "^5.1.0",
     "mongoose": "^8.16.0",
-    "twig": "^1.17.1"
+    "socket.io": "^4.8.1",
+    "twig": "^1.17.1",
+    "yup": "^1.6.1"
   }
 }

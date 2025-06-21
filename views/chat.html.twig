@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+    </script>
+    <h1>Chat !</h1>
+    <label for="msg">Message</label><br>
+    <input type="text" placeholder="Write a message !" id="msg">
+    <input type="submit">
+</body>
+</html>
