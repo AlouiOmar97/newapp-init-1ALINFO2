@@ -74,11 +74,22 @@ const showChat= (req, res, next)=>{
 function socketIO(server) {
  
     const io = socketIo(server);
-       io.on("connection",(socket)=>{
+       io.on("connection",async (socket)=>{
            console.log("user connected with socket id"+socket.id); 
-           socket.emit('msg','A new user is connected!')
-           socket.on('sendMsg',(data)=>{
-            io.emit('msg',data)
+           socket.broadcast.emit('msg','A new user is connected!')
+           const msgs=await Chat.find()
+           socket.emit('showMsg',msgs)
+
+           socket.on('sendMsg',async (data)=>{
+            io.emit('msg',data.username +" : "+ data.msg)
+            //save msg DB
+            await new Chat({
+                content: data.msg,
+                dateCreation: new Date()
+            }).save()
+           })
+           socket.on('isTyping', (data)=>{
+            io.emit('msg', data)
            })
          })
     return io;

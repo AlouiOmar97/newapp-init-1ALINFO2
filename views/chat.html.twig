@@ -9,10 +9,11 @@
     <script src="/socket.io/socket.io.js"></script>
     <h1>Chat !</h1>
     <label for="msg">Message</label><br>
-    <input type="text" placeholder="Write a message !" id="msg">
+    <input type="text" onkeypress="isTyping()" placeholder="Write a message !" id="msg">
     <input onclick="sendMsg()" type="submit">
     <script>
         var socket = io();
+        var username= prompt("Type your name !")
         socket.on('msg',(data)=>{
             console.log(data)
             var p = document.createElement("p")
@@ -20,11 +21,31 @@
             document.body.append(p)
             })
 
+        socket.on('showMsg',(data)=>{
+            console.log(data)
+            for(i=0;i<data.length;i++){
+                console.log(data[i])
+                var p = document.createElement("p")
+                p.innerHTML = data[i].content
+                document.body.append(p)
+            }
+        })
+
     function sendMsg(){
                 var msg= document.getElementById("msg").value
+                data= {
+                    username: username,
+                    msg: msg
+                }
                 console.log(msg)
-                socket.emit('sendMsg',msg)
+                socket.emit('sendMsg',data)
             }
+
+    function isTyping(){
+        console.log("is typing")
+        data= username + "is typing..."
+        socket.emit('isTyping', data)
+    }
     </script>
 </body>
 </html>
