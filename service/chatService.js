@@ -76,6 +76,10 @@ function socketIO(server) {
     const io = socketIo(server);
        io.on("connection",(socket)=>{
            console.log("user connected with socket id"+socket.id); 
+           socket.emit('msg','A new user is connected!')
+           socket.on('sendMsg',(data)=>{
+            io.emit('msg',data)
+           })
          })
     return io;
    }

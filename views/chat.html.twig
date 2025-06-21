@@ -7,12 +7,24 @@
 </head>
 <body>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-    </script>
     <h1>Chat !</h1>
     <label for="msg">Message</label><br>
     <input type="text" placeholder="Write a message !" id="msg">
-    <input type="submit">
+    <input onclick="sendMsg()" type="submit">
+    <script>
+        var socket = io();
+        socket.on('msg',(data)=>{
+            console.log(data)
+            var p = document.createElement("p")
+            p.innerHTML = data
+            document.body.append(p)
+            })
+
+    function sendMsg(){
+                var msg= document.getElementById("msg").value
+                console.log(msg)
+                socket.emit('sendMsg',msg)
+            }
+    </script>
 </body>
 </html>
