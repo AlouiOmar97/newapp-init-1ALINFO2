@@ -120,10 +120,8 @@ function socketIO(server) {
             console.log(data);
             
             
-            let joueur1= await Joueur.findById("685ea51f16e2367b82184038")
-            let joueur2= await Joueur.findById(data.joueur2)
-            console.log(joueur1);
-            
+            const joueur1= await Joueur.findById(data.joueur1)
+            const joueur2= await Joueur.findById(data.joueur2)
             io.emit('msg',JSON.stringify(joueur1))
             io.emit('msg',JSON.stringify(joueur2))
            })
