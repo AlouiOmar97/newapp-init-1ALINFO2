@@ -4,6 +4,7 @@ var http = require('http')
 const path = require('path')
 const osRouter = require('./controller/osController')
 const chatRouter = require('./controller/chatController')
+const joueurRouter = require('./controller/joueurController')
 const mongoose = require('mongoose')
 const { socketIO } = require('./service/chatService')
 const url = require('./database/mongodb.json')
@@ -14,6 +15,7 @@ app.use(express.json())
 
 app.use('/os', osRouter)
 app.use('/chat', chatRouter)
+app.use('/joueur', joueurRouter)
 
 server= http.createServer(app)
 const io = socketIO(server);
