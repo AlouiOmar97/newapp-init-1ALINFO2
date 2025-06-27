@@ -1,4 +1,5 @@
 const Joueur = require('../model/joueurModel')
+const Partie = require('../model/partieModel')
 const socketIo = require('socket.io')
 async function create(req, res, next){
    await new Joueur({
@@ -12,6 +13,25 @@ async function create(req, res, next){
         }else{
             res.json({
                 msg:'Joueur created !',
+                joueur: data
+            })
+        }
+      })
+}
+
+async function createPartie(req, res, next){
+   await new Partie({
+        nom: req.body.nom,
+        joueur1: req.params.joueur1,
+        joueur2: req.params.joueur2,
+        etat: "En cours"
+    }).save()
+      .then((data, error)=>{
+        if(error){
+            res.json('error creating partie: '+error)
+        }else{
+            res.json({
+                msg:'Partie created !',
                 joueur: data
             })
         }
@@ -54,6 +74,21 @@ const update =async (req, res, next)=>{
       })
 }
 
+const attaque =async (req, res, next)=>{
+   let joueur1= await Joueur.findById(req.params.joueur1)
+   let joueur2= await Joueur.findById(req.params.joueur2)
+   joueur1.score= joueur1.score + 10
+   await joueur1.save()
+   console.log(joueur1)
+   joueur2.sante= joueur2.sante - 20
+   await joueur2.save()
+   console.log(joueur2)
+   res.json({msg:'attaque',
+    joueur1: joueur1,
+    joueur2
+   })
+}
+
 const deleteC =async (req, res, next)=>{
     await Joueur.findByIdAndDelete(req.params.id)
         .then((data, error)=>{
@@ -69,7 +104,7 @@ const deleteC =async (req, res, next)=>{
 }
 
 const showJoueur= (req, res, next)=>{
-    res.render('joueur.html.twig')
+    res.render('partie.html.twig')
 }
 
 function socketIO(server) {
@@ -80,14 +115,28 @@ function socketIO(server) {
            socket.broadcast.emit('msg','A new user is connected!')
            const msgs=await Joueur.find()
            socket.emit('showMsg',msgs)
-
+           socket.on('afficherStat',async (data)=>{
+            console.log('Afficher Stat');
+            console.log(data);
+            
+            
+            let joueur1= await Joueur.findById("685ea51f16e2367b82184038")
+            let joueur2= await Joueur.findById(data.joueur2)
+            console.log(joueur1);
+            
+            io.emit('msg',JSON.stringify(joueur1))
+            io.emit('msg',JSON.stringify(joueur2))
+           })
            socket.on('sendMsg',async (data)=>{
-            io.emit('msg',data.username +" : "+ data.msg)
+            io.emit('msg',data.partie +" : "+ data.joueur1+ " : "+data.joueur2)
             //save msg DB
-            await new Joueur({
-                pseudo: data.msg,
-                sante: req.body.sante
+            await new Partie({
+                nom: data.partie,
+                joueur1: data.joueur1,
+                joueur2: data.joueur2,
+                etat: "En cours"
             }).save()
+            socket.emit('showMsg',data)
            })
            socket.on('isTyping', (data)=>{
             io.emit('msg', data)
@@ -96,4 +145,4 @@ function socketIO(server) {
     return io;
    }
 
-module.exports = { create, read, readOne, update, deleteC, showJoueur, socketIO }
+module.exports = { create, createPartie, read, readOne, update, deleteC, attaque, showJoueur, socketIO }

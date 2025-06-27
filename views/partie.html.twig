@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <script src="/socket.io/socket.io.js"></script>
+    <h1>Partie !</h1>
+    <label for="msg">Nom Partie:</label><br>
+    <input type="text"  id="partie"><br>
+    <label for="msg">Joueur 1:</label><br>
+    <input type="text" id="j1"><br>
+    <label for="msg">Joueur 2:</label><br>
+    <input type="text" id="j2"><br>
+    <input onclick="sendMsg()" type="submit">
+    <button onclick="afficherStat()" >Afficher Stat</button>
+    <script>
+        var socket = io();
+        //var username= prompt("Type your name !")
+        socket.on('msg',(data)=>{
+            console.log(data)
+            var p = document.createElement("p")
+            p.innerHTML = data
+            document.body.append(p)
+            })
+
+        socket.on('showMsg',(data)=>{
+            console.log(data)
+            for(i=0;i<data.length;i++){
+                console.log(data[i])
+                var p = document.createElement("p")
+                p.innerHTML = data[i].partie
+                document.body.append(p)
+            }
+        })
+
+    function afficherStat(){
+        var j1= document.getElementById("j1").value
+        var j2= document.getElementById("j2").value
+        data= {
+                    joueur1: j1,
+                    joueur2: j2
+                }
+        socket.emit('afficherStat',data)
+    }
+
+    function sendMsg(){
+                var partie= document.getElementById("partie").value
+                var j1= document.getElementById("j1").value
+                var j2= document.getElementById("j2").value
+                data= {
+                    partie: partie,
+                    joueur1: j1,
+                    joueur2: j2
+                }
+                console.log(partie)
+                socket.emit('sendMsg',data)
+            }
+
+    function isTyping(){
+        console.log("is typing")
+        data= username + "is typing..."
+        socket.emit('isTyping', data)
+    }
+    </script>
+</body>
+</html>
